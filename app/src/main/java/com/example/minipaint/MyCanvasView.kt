@@ -12,8 +12,13 @@ private const val STROKE_WIDTH = 12f // has to be float
 
 class MyCanvasView(context : Context) : View(context) {
 
-    private lateinit var extraCanvas: Canvas
-    private lateinit var extraBitmap: Bitmap
+    //private lateinit var extraCanvas: Canvas
+    //private lateinit var extraBitmap: Bitmap
+
+    // Path representing the drawing so far
+    private val drawing = Path()
+    // Path representing what's currently being drawn
+    private val curPath = Path()
 
     private val backgroundColor = ResourcesCompat.getColor(resources, R.color.colorBackground, null)
     private val drawColor = ResourcesCompat.getColor(resources, R.color.colorPaint, null)
@@ -44,6 +49,7 @@ class MyCanvasView(context : Context) : View(context) {
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) { //new width and height (to change to) and the old width and height (to change from)
         super.onSizeChanged(width, height, oldWidth, oldHeight)
 
+        /*
         if (::extraBitmap.isInitialized){
             extraBitmap.recycle()
         }
@@ -51,6 +57,7 @@ class MyCanvasView(context : Context) : View(context) {
         extraBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         extraCanvas = Canvas(extraBitmap)
         extraCanvas.drawColor(backgroundColor)
+        */
 
         // Calculate a rectangular frame around the picture.
         val inset = 40
@@ -61,9 +68,13 @@ class MyCanvasView(context : Context) : View(context) {
     //This method draw the contents on the screen in this case draw the cached extraBitmap on the canvas associated with the view
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawBitmap(extraBitmap, 0f, 0f, null) //the x and y coordinates
+        //canvas.drawBitmap(extraBitmap, 0f, 0f, null) //the x and y coordinates
 
-        // Draw a frame around the canvas.
+        // Draw the drawing so far
+        canvas.drawPath(drawing, paint)
+        // Draw any current squiggle
+        canvas.drawPath(curPath, paint)
+        // Draw a frame around the canvas
         canvas.drawRect(frame, paint)
 
         //Important note:
@@ -103,7 +114,8 @@ class MyCanvasView(context : Context) : View(context) {
             currentX = motionTouchEventX
             currentY = motionTouchEventY
             // Draw the path in the extra bitmap to cache it.
-            extraCanvas.drawPath(path, paint)
+            //extraCanvas.drawPath(path, paint)
+            drawing.addPath(path)
         }
 
         //Force redrawing of the screen
@@ -111,8 +123,9 @@ class MyCanvasView(context : Context) : View(context) {
     }
 
     private fun touchUp() {
-        // Reset the path so it doesn't get drawn again.
-        path.reset()
+        // Add the current path to the drawing so far
+        // Rewind the current path for the next touch
+        curPath.reset()
     }
 
 }
