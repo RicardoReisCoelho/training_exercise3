@@ -7,7 +7,7 @@ android {
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "com.example.minipaint"
+        applicationId "com.example.clippingexample"
         minSdkVersion 22
         targetSdkVersion 29
         versionCode 1
